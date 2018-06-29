@@ -47,7 +47,7 @@ class TesseractConan(ConanFile):
 
     def build(self):
         if self.settings.os == "Linux":
-            self.run("chmod +x build.sh && yes|sudo ./build.sh", cwd=self.root)
+            self.run("chmod +x build.sh && sudo ./build.sh", cwd=self.root)
 
     # def package(self):
     #     self.copy(

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-git clone https://github.com/GStreamer/cerbero.git
+git clone https://github.com/yjjnls/cerbero
 cd cerbero
-git checkout 1.14.0.1
 ./cerbero-uninstalled -c config/linux.config bootstrap
+./cerbero-uninstalled -c config/linux.config package gstreamer-1.0 -t

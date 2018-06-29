@@ -17,7 +17,7 @@ if __name__ == "__main__":
     builds = []
     for settings, options, env_vars, build_requires, reference in builder.items:
         # dynamic only
-        if not options["tesseract:shared"]:
+        if not options["gstreamer:shared"]:
             continue
         # release only
         if settings["build_type"] == "Debug":

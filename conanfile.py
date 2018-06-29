@@ -14,16 +14,13 @@ class TesseractConan(ConanFile):
     license = "Apache-2.0"
     homepage = "https://github.com/yjjnls/conan-gstreamer"
     # exports = ["LICENSE.md"]
-    # exports_sources = ["CMakeLists.txt"]
+    # exports_sources = ["build.sh"]
     # generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
-    options = {
-        "shared": [True, False],
-        "fPIC": [True, False],
-        "with_training": [True, False]
-    }
-    default_options = "shared=True", "fPIC=True", "with_training=False"
+    options = {"shared": [True, False], "fPIC": [True, False]}
+    default_options = "shared=True", "fPIC=True"
     source_subfolder = "source_subfolder"
+    root = ""
 
     # def source(self):
     #     tools.get(
@@ -40,6 +37,7 @@ class TesseractConan(ConanFile):
     #     self.options["leptonica"].shared = True
 
     def config_options(self):
+        self.root = os.getcwd()
         if self.settings.os == "Windows":
             self.options.remove("fPIC")
 
@@ -49,32 +47,32 @@ class TesseractConan(ConanFile):
 
     def build(self):
         if self.settings.os == "Linux":
-            self.run("chmod +x build.sh && ./build.sh")
+            self.run("chmod +x build.sh && yes|sudo ./build.sh", cwd=self.root)
 
-    def package(self):
-        self.copy(
-            "LICENSE",
-            src=self.source_subfolder,
-            dst="licenses",
-            ignore_case=True,
-            keep_path=False)
-        # remove man pages
-        shutil.rmtree(
-            os.path.join(self.package_folder, 'share', 'man'),
-            ignore_errors=True)
-        # remove binaries
-        for ext in ['', '.exe']:
-            try:
-                os.remove(
-                    os.path.join(self.package_folder, 'bin',
-                                 'tesseract' + ext))
-            except:
-                pass
+    # def package(self):
+    #     self.copy(
+    #         "LICENSE",
+    #         src=self.source_subfolder,
+    #         dst="licenses",
+    #         ignore_case=True,
+    #         keep_path=False)
+    #     # remove man pages
+    #     shutil.rmtree(
+    #         os.path.join(self.package_folder, 'share', 'man'),
+    #         ignore_errors=True)
+    #     # remove binaries
+    #     for ext in ['', '.exe']:
+    #         try:
+    #             os.remove(
+    #                 os.path.join(self.package_folder, 'bin',
+    #                              'tesseract' + ext))
+    #         except:
+    #             pass
 
-    def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
-        if self.settings.os == "Linux":
-            self.cpp_info.libs.extend(["pthread"])
-        if self.settings.compiler == "Visual Studio":
-            if not self.options.shared:
-                self.cpp_info.libs.append('ws2_32')
+    # def package_info(self):
+    #     self.cpp_info.libs = tools.collect_libs(self)
+    #     if self.settings.os == "Linux":
+    #         self.cpp_info.libs.extend(["pthread"])
+    #     if self.settings.compiler == "Visual Studio":
+    #         if not self.options.shared:
+    #             self.cpp_info.libs.append('ws2_32')

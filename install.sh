@@ -1,6 +1,6 @@
 #! /bin/bash
 
-if [ `expr $(pkg-config --version) \< 0.29.2` -ne 0 ]; then 
+if [ `expr $(pkg-config --version) \< 0.29.1` -ne 0 ]; then 
     cd /tmp
     wget https://pkg-config.freedesktop.org/releases/pkg-config-0.29.1.tar.gz
     tar -zxf pkg-config-0.29.1.tar.gz

@@ -36,7 +36,4 @@ class GstreamerBuildToolsConan(ConanFile):
                 cwd="%s/cerbero" % self.root)
 
     def package(self):
-        self.copy(
-            pattern="*",
-            dst=".",
-            src="%s/cerbero/build/build-tools" % self.root)
+        self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)

@@ -32,7 +32,8 @@ if __name__ == "__main__":
                         [settings, options, env_vars, build_requires])
         elif platform.system() == "Linux":
             if settings["compiler"] == "gcc":
-                if settings["compiler.version"] == '4.9' and settings["arch"] == 'x86_64':
+                if settings["compiler.version"] == '4.9' and settings[
+                        "arch"] == 'x86_64':
                     builds.append(
                         [settings, options, env_vars, build_requires])
     builder.builds = builds

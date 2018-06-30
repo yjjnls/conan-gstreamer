@@ -6,7 +6,7 @@ import shutil
 from conans import ConanFile, CMake, tools
 
 
-class GstreamerDevelopmentConan(ConanFile):
+class GstreamerPackageConan(ConanFile):
     name = "gstreamer-package"
     version = "1.14.0.1"
     description = "source package for gstreamer build in cerbero"
@@ -27,8 +27,8 @@ class GstreamerDevelopmentConan(ConanFile):
 
     def requirements(self):
         if not os.path.exists("%s/cerbero" % self.root):
-            self.run(
-                "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
+            self.run("git clone https://github.com/yjjnls/cerbero",
+                     cwd=self.root)
 
     def build(self):
         if self.settings.os == "Linux":
@@ -37,7 +37,4 @@ class GstreamerDevelopmentConan(ConanFile):
                 cwd="%s/cerbero" % self.root)
 
     def package(self):
-        self.copy(
-            pattern="local",
-            dst=".",
-            src="%s/cerbero/build/source" % self.root)
+        self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)

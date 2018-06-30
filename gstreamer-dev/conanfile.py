@@ -32,8 +32,8 @@ class GstreamerDevelopmentConan(ConanFile):
 
         self.requires("gstreamer-build-tools/%s@%s/stable" %
                       (self.version, os.environ['CONAN_USERNAME']))
-        self.requires("gstreamer-package/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
+        # self.requires("gstreamer-package/%s@%s/stable" %
+        #               (self.version, os.environ['CONAN_USERNAME']))
 
     def build(self):
         if self.settings.os == "Linux":
@@ -42,14 +42,14 @@ class GstreamerDevelopmentConan(ConanFile):
                 "sudo cp -rf build %s/cerbero" % self.root,
                 cwd=self.deps_cpp_info["gstreamer-build-tools"].build_paths[0])
             # self.run("sudo mkdir -p %s/cerbero/build/sources" % self.root)
-            self.run(
-                "sudo cp -rf build %s/cerbero" % self.root,
-                cwd=self.deps_cpp_info["gstreamer-package"].build_paths[0])
-            self.run("sudo rm -rf *tar*", cwd="%s/cerbero" % self.root)
             # self.run(
-            #     "sudo ./cerbero-uninstalled -c config/linux.config package gstreamer-1.0 -t",
-            #     cwd="%s/cerbero" % self.root)
+            #     "sudo cp -rf build %s/cerbero" % self.root,
+            #     cwd=self.deps_cpp_info["gstreamer-package"].build_paths[0])
+            self.run("sudo rm -rf *tar*", cwd="%s/cerbero" % self.root)
+            self.run(
+                "sudo ./cerbero-uninstalled -c config/linux.config package gstreamer-1.0 -t",
+                cwd="%s/cerbero" % self.root)
 
     def package(self):
         tar = "gstreamer-1.0-linux-x86_64-%s-devel.tar.bz2" % self.version
-        # self.copy(pattern=tar, dst=".", src="%s/cerbero" % self.root)
+        self.copy(pattern=tar, dst=".", src="%s/cerbero" % self.root)

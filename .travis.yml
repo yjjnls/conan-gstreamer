@@ -11,7 +11,7 @@ osx: &osx
 matrix:
   include:
     - <<: *linux
-      env:  CONAN_GCC_VERSIONS=4.9 CONAN_DOCKER_IMAGE=lasote/conangcc49 CONAN_BUILD_TYPES=Release CONAN_ARCHS=x86_64
+      env:  CONAN_GCC_VERSIONS=4.9 CONAN_DOCKER_IMAGE=lasote/conangcc49 CONAN_BUILD_TYPES=Release CONAN_ARCHS=x86_64 PROJECT=gstreamer-dev
 
 install:
   - sudo pip install conan --upgrade
@@ -20,5 +20,5 @@ install:
   - sudo conan user
 
 script:
-  - cd build-tools
+  - cd ${PROJECT}
   - sudo python build.py

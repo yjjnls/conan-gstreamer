@@ -28,11 +28,14 @@ class GstreamerBuildToolsConan(ConanFile):
         self.run(
             "if [ ! -d cerbero ]; then git clone https://github.com/yjjnls/cerbero; fi",
             cwd=self.root)
+        self.run("sudo apt-get -y update")
+        self.run("sudo apt-get -y upgrade")
+        self.run("yes|sudo apt-get install build-essential")
 
     def build(self):
         if self.settings.os == "Linux":
             self.run(
-                "sudo ./cerbero-uninstalled -c config/linux.config bootstrap",
+                "yes|sudo ./cerbero-uninstalled -c config/linux.config bootstrap",
                 cwd="%s/cerbero" % self.root)
 
     def package(self):

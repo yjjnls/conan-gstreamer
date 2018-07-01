@@ -26,15 +26,16 @@ class GstreamerRuntimeConan(ConanFile):
             self.options.remove("fPIC")
 
     def requirements(self):
-        self.run(
-            "if [ ! -d cerbero ]; then git clone https://github.com/yjjnls/cerbero; fi",
-            cwd=self.root)
+        if not os.path.exists("%s/cerbero" % self.root):
+            self.run(
+                "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
 
         self.requires(
-            "gstreamer-build-tools/%s@bincrafters/stable" % self.version)
+            "gstreamer-build-tools/%s@%s/stable" % self.version, os.environ['CONAN_USERNAME'])
 
     def build(self):
         if self.settings.os == "Linux":
+            self.run("sudo mkdir -p %s/cerbero/build/build-tools" % self.root)
             self.run(
                 "sudo cp -rf bin include lib share %s/cerbero/build/build-tools"
                 % self.root,
@@ -47,7 +48,3 @@ class GstreamerRuntimeConan(ConanFile):
     def package(self):
         tar = "gstreamer-1.0-linux-x86_64-%s.tar.bz2" % self.version
         self.copy(pattern=tar, dst=".", src="%s/cerbero" % self.root)
-
-    def package_info(self):
-        tar = "gstreamer-1.0-linux-x86_64-%s.tar.bz2" % self.version
-        self.run("tar -xf %s && sudo rm -f %s" % (tar, tar), cwd=".")

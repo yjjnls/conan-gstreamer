@@ -6,12 +6,13 @@ import os
 import platform
 
 if __name__ == "__main__":
-    CONAN_USERNAME = os.environ.get("CONAN_USERNAME")
+    CONAN_USERNAME = os.environ.get("CONAN_USERNAME", "yjjnls")
     CONAN_UPLOAD = 'https://api.bintray.com/conan/%s/%s' % (CONAN_USERNAME,
                                                             'stable')
     os.environ['CONAN_UPLOAD'] = CONAN_UPLOAD
     os.environ['CONAN_CHANNEL'] = 'stable'
     os.environ['CONAN_UPLOAD_ONLY_WHEN_STABLE'] = 'False'
+    os.environ['CONAN_USERNAME'] = CONAN_USERNAME
 
     builder = build_template_default.get_builder()
     builds = []

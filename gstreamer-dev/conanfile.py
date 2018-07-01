@@ -31,7 +31,7 @@ class GstreamerDevelopmentConan(ConanFile):
                 "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
 
         self.requires(
-            "gstreamer-build-tools/%s@%s/stable" % self.version, os.environ['CONAN_USERNAME'])
+            "gstreamer-build-tools/%s@%s/stable" % (self.version, os.environ['CONAN_USERNAME']))
 
     def build(self):
         if self.settings.os == "Linux":

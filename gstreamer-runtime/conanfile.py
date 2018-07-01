@@ -50,4 +50,4 @@ class GstreamerRuntimeConan(ConanFile):
 
     def package_info(self):
         tar = "gstreamer-1.0-linux-x86_64-%s.tar.bz2" % self.version
-        self.run("tar -xvf %s && sudo rm -f %s" % (tar, tar), cwd=".")
+        self.run("tar -xf %s && sudo rm -f %s" % (tar, tar), cwd=".")

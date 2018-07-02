@@ -28,6 +28,10 @@ class GstreamerBuildToolsConan(ConanFile):
         self.run(
             "if [ ! -d cerbero ]; then git clone https://github.com/yjjnls/cerbero; fi",
             cwd=self.root)
+        
+        self.run("sudo apt-get -y update")
+        self.run("sudo apt-get -y upgrade")
+        self.run("sudo apt-get install build-essential")
 
     def build(self):
         if self.settings.os == "Linux":
@@ -36,7 +40,4 @@ class GstreamerBuildToolsConan(ConanFile):
                 cwd="%s/cerbero" % self.root)
 
     def package(self):
-        self.copy(
-            pattern="*",
-            dst=".",
-            src="%s/cerbero/build/build-tools" % self.root)
+        self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)

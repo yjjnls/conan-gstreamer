@@ -27,15 +27,15 @@ class GstreamerPackageConan(ConanFile):
 
     def requirements(self):
         if not os.path.exists("%s/cerbero" % self.root):
-            self.run("git clone https://github.com/yjjnls/cerbero",
-                     cwd=self.root)
+            self.run(
+                "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
         self.run("git config --global user.name \"yjjnls\"")
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def build(self):
         if self.settings.os == "Linux":
             self.run(
-                "sudo ./cerbero-uninstalled -c config/linux.config fetch libffi",
+                "sudo ./cerbero-uninstalled -c config/linux.config fetch-package gstreamer-1.0 --deps",
                 cwd="%s/cerbero" % self.root)
 
     def package(self):
@@ -44,5 +44,6 @@ class GstreamerPackageConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Linux":
-            self.run("sudo cp -rf %s/cerbero/build %s" %
-                     (self.root, os.getcwd()))
+            self.run(
+                "if [ -d %s/cerbero/build ]; then sudo cp -rf %s/cerbero/build %s; fi"
+                % (self.root, self.root, os.getcwd()))

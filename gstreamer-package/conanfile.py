@@ -29,6 +29,8 @@ class GstreamerPackageConan(ConanFile):
         if not os.path.exists("%s/cerbero" % self.root):
             self.run("git clone https://github.com/yjjnls/cerbero",
                      cwd=self.root)
+        self.run("git config --global user.name \"yjjnls\"")
+        self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def build(self):
         if self.settings.os == "Linux":
@@ -37,4 +39,11 @@ class GstreamerPackageConan(ConanFile):
                 cwd="%s/cerbero" % self.root)
 
     def package(self):
-        self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)
+        self.package_dir = os.getcwd()
+        # self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)
+        pass
+
+    def package_info(self):
+        if self.settings.os == "Linux":
+            self.run("sudo cp -rf %s/cerbero/build %s/build" %
+                     (self.root, self.package_dir))

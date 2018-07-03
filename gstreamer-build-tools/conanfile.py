@@ -28,6 +28,8 @@ class GstreamerBuildToolsConan(ConanFile):
         self.run(
             "if [ ! -d cerbero ]; then git clone https://github.com/yjjnls/cerbero; fi",
             cwd=self.root)
+        self.run("git config --global user.name \"yjjnls\"")
+        self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def build(self):
         if self.settings.os == "Linux":
@@ -39,4 +41,11 @@ class GstreamerBuildToolsConan(ConanFile):
                 cwd="%s/cerbero" % self.root)
 
     def package(self):
-        self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)
+        self.package_dir = os.getcwd()
+        # self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)
+        pass
+
+    def package_info(self):
+        if self.settings.os == "Linux":
+            self.run("sudo cp -rf %s/cerbero/build %s/build" %
+                     (self.root, self.package_dir))

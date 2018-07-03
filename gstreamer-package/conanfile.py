@@ -35,7 +35,7 @@ class GstreamerPackageConan(ConanFile):
     def build(self):
         if self.settings.os == "Linux":
             self.run(
-                "sudo ./cerbero-uninstalled -c config/linux.config fetch-package gstreamer-1.0 --deps",
+                "sudo ./cerbero-uninstalled -c config/linux.config fetch libffi",
                 cwd="%s/cerbero" % self.root)
 
     def package(self):

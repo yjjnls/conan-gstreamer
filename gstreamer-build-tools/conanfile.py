@@ -33,18 +33,25 @@ class GstreamerBuildToolsConan(ConanFile):
 
     def build(self):
         if self.settings.os == "Linux":
-            self.run("sudo apt-get -y update")
-            self.run("sudo apt-get -y upgrade")
-            self.run("yes|sudo apt-get install build-essential")
+            command = "if [ $(dpkg -l |grep build-essential |wc -l) -eq 0 ]; then \
+            sudo apt-get -y update && \
+            sudo apt-get -y upgrade && \
+            yes|sudo apt-get install build-essential; \
+            fi "
+
+            self.run(command)
             self.run(
                 "yes|sudo ./cerbero-uninstalled -c config/linux.config bootstrap",
                 cwd="%s/cerbero" % self.root)
 
     def package(self):
-        # self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)
-        pass
+        self.copy(
+            pattern="*",
+            dst="build",
+            src="%s/cerbero/build" % self.root,
+            symlinks=True)
 
-    def package_info(self):
-        if self.settings.os == "Linux":
-            self.run("sudo cp -rf %s/cerbero/build %s" %
-                     (self.root, os.getcwd()))
+    # def package_info(self):
+    #     if self.settings.os == "Linux":
+    #         self.run("sudo cp -rf %s/cerbero/build %s" % (self.root,
+    #                                                       os.getcwd()))

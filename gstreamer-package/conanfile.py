@@ -39,12 +39,10 @@ class GstreamerPackageConan(ConanFile):
                 cwd="%s/cerbero" % self.root)
 
     def package(self):
-        self.package_dir = os.getcwd()
         # self.copy(pattern="*", dst="build", src="%s/cerbero/build" % self.root)
         pass
 
     def package_info(self):
         if self.settings.os == "Linux":
-            self.run("sudo mkdir -p %s/build" % self.package_dir)
-            self.run("sudo cp -rf %s/cerbero/build %s/build" %
-                     (self.root, self.package_dir))
+            self.run("sudo cp -rf %s/cerbero/build %s" %
+                     (self.root, os.getcwd()))

@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import shutil
-from conans import ConanFile, CMake, tools
+from conans import ConanFile
 
 
 class GstreamerDevelopmentConan(ConanFile):
@@ -26,13 +25,14 @@ class GstreamerDevelopmentConan(ConanFile):
         if self.settings.os == "Windows":
             self.options.remove("fPIC")
 
-    def requirements(self):
+    def source(self):
         if not os.path.exists("%s/cerbero" % self.root):
             self.run(
                 "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
         self.run("git config --global user.name \"yjjnls\"")
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
+    def requirements(self):
         self.requires("gstreamer-build-tools/%s@%s/stable" %
                       (self.version, os.environ['CONAN_USERNAME']))
         self.requires("gstreamer-package/%s@%s/stable" %
@@ -52,3 +52,10 @@ class GstreamerDevelopmentConan(ConanFile):
 
     def package(self):
         self.copy(pattern=self.tar, dst=".", src="%s/cerbero" % self.root)
+
+    def package_info(self):
+        output_dir = os.environ.get("GSTREAMER_1_0_ROOT_X86_64",
+                                    "/opt/gstreamer/linux_x86_64")
+        tar_package = "%s/%s" % (os.getcwd(), self.tar)
+        self.run("mkdir -p %s" % output_dir)
+        self.run("tar -jxf %s" % tar_package, cwd=output_dir)

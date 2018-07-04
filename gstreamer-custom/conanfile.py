@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from conans import ConanFile
+from conans import ConanFile, CMake, tools
 
 
 class GstreamerCustomConan(ConanFile):
@@ -21,14 +21,16 @@ class GstreamerCustomConan(ConanFile):
     tar = ""
 
     def config_options(self):
-        self.root = "%s/.." % os.getcwd()
+        self.root = "%s" % os.getcwd()
         if self.settings.os == "Windows":
             self.options.remove("fPIC")
 
     def source(self):
-        if not os.path.exists("%s/cerbero" % self.root):
-            self.run(
-                "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
+        if os.path.exists("%s/libgstrtspserver" % self.root):
+            os.removedirs("%s/libgstrtspserver" % self.root)
+        self.run(
+            "git clone https://github.com/yjjnls/libgstrtspserver.git --recursive",
+            cwd=self.root)
         self.run("git config --global user.name \"yjjnls\"")
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
@@ -39,25 +41,16 @@ class GstreamerCustomConan(ConanFile):
                       (self.version, os.environ['CONAN_USERNAME']))
 
     def build(self):
-        pass
+        if self.settings.os == "Linux":
+            gstreamer_root = os.environ.get("GSTREAMER_ROOT",
+                                            "/opt/gstreamer/linux_x86_64")
 
-    #     if self.settings.os == "Linux":
-    #         for p in self.deps_cpp_info.build_paths:
-    #             self.run("sudo cp -rf build %s/cerbero" % self.root, cwd=p)
+            vars = {
+                'PKG_CONFIG_PATH': "%s/lib/pkgconfig" % gstreamer_root,
+                'GSTREAMER_ROOT': gstreamer_root
+            }
 
-    #         self.tar = "gstreamer-1.0-linux-x86_64-%s.tar.bz2" % self.version
-
-    #         self.run(
-    #             "if [ ! -f %s ]; then sudo ./cerbero-uninstalled -c \
-    #             config/linux.config package gstreamer-1.0 -t; fi" % self.tar,
-    #             cwd="%s/cerbero" % self.root)
-
-    # def package(self):
-    #     self.copy(pattern=self.tar, dst=".", src="%s/cerbero" % self.root)
-
-    # def package_info(self):
-    #     output_dir = os.environ.get("GSTREAMER_1_0_ROOT_X86_64",
-    #                                 "/opt/gstreamer/linux_x86_64")
-    #     tar_package = "%s/%s" % (os.getcwd(), self.tar)
-    #     self.run("mkdir -p %s" % output_dir)
-    #     self.run("tar -jxf %s" % tar_package, cwd=output_dir)
+            with tools.environment_append(vars):
+                self.run(
+                    "chmod +x build.sh && sudo ./build.sh",
+                    cwd="%s/libgstrtspserver" % self.root)

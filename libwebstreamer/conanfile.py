@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 from conans import ConanFile, CMake, tools
+import os
+import platform
+
+__dir__ = os.path.dirname(os.path.abspath(__file__))
 
 
 class LibWebstreamerConan(ConanFile):
     name = "libwebstreamer"
-    version = "0.1.0"
+    version = "0.1.0-dev"
     description = "custom modified gstreamer library"
     url = "https://github.com/yjjnls/conan-gstreamer"
     license = "Apache-2.0"
@@ -29,15 +32,16 @@ class LibWebstreamerConan(ConanFile):
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def requirements(self):
-        self.requires("gstreamer-runtime/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
-        self.requires("gstreamer-dev/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
+        self.requires("gstreamer-custom/1.14.0.1@%s/stable" %
+                      os.environ['CONAN_USERNAME'])
+        self.requires("tesseract.plugin/0.1.0-dev.6@%s/testing" %
+                      os.environ['CONAN_USERNAME'])
         pass
 
     def build(self):
 
         self.run("git clone https://github.com/yjjnls/libwebstreamer.git")
+        self.run("cd libwebstreamer && git checkout linux")
 
         if self.settings.os == "Linux":
             gstreamer_root = os.environ.get("GSTREAMER_ROOT",
@@ -62,7 +66,7 @@ class LibWebstreamerConan(ConanFile):
         self.copy(
             pattern="libwebstreamer%s" % ext,
             dst=".",
-            src="build/libwebstreamer")
+            src="build/libwebstreamer/lib")
 
     # def package_info(self):
     #     if self.settings.os == "Linux":

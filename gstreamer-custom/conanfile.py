@@ -18,7 +18,7 @@ class GstreamerCustomConan(ConanFile):
     default_options = "shared=True", "fPIC=True"
     source_subfolder = "source_subfolder"
     root = ""
-    tar = ""
+    generators = "cmake"
 
     def config_options(self):
         self.root = "%s" % os.getcwd()
@@ -26,21 +26,20 @@ class GstreamerCustomConan(ConanFile):
             self.options.remove("fPIC")
 
     def source(self):
-        if os.path.exists("%s/libgstrtspserver" % self.root):
-            os.removedirs("%s/libgstrtspserver" % self.root)
-        self.run(
-            "git clone https://github.com/yjjnls/libgstrtspserver.git --recursive",
-            cwd=self.root)
         self.run("git config --global user.name \"yjjnls\"")
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def requirements(self):
-        self.requires("gstreamer-runtime/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
-        self.requires("gstreamer-dev/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
+        # self.requires("gstreamer-runtime/%s@%s/stable" %
+        #               (self.version, os.environ['CONAN_USERNAME']))
+        # self.requires("gstreamer-dev/%s@%s/stable" %
+        #               (self.version, os.environ['CONAN_USERNAME']))
+        pass
 
     def build(self):
+        self.run(
+            "git clone https://github.com/yjjnls/libgstrtspserver.git --recursive"
+        )
         if self.settings.os == "Linux":
             gstreamer_root = os.environ.get("GSTREAMER_ROOT",
                                             "/opt/gstreamer/linux_x86_64")
@@ -50,7 +49,14 @@ class GstreamerCustomConan(ConanFile):
                 'GSTREAMER_ROOT': gstreamer_root
             }
 
+            cmake = CMake(self)
             with tools.environment_append(vars):
                 self.run(
                     "chmod +x build.sh && sudo ./build.sh",
-                    cwd="%s/libgstrtspserver" % self.root)
+                    cwd="%s/libgstrtspserver" % os.getcwd())
+                cmake.configure(source_folder='libgstrtspserver')
+                cmake.build()
+                cmake.install()
+
+    def package(self):
+        self.copy(pattern="*", dst="out", src="out")

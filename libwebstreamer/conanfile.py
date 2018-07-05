@@ -38,8 +38,8 @@ class LibWebstreamerConan(ConanFile):
             "CONAN_USERNAME", "yjjnls"))
         self.requires("gstreamer-custom/1.14.0.1@%s/stable" % os.environ.get(
             "CONAN_USERNAME", "yjjnls"))
-        # self.requires("tesseract.plugin/0.1.0-dev.10@%s/testing" %
-        #               os.environ.get("CONAN_USERNAME", "yjjnls"))
+        # self.requires("tesseract.plugin/0.2.0@%s/stable" % os.environ.get(
+        #     "CONAN_USERNAME", "yjjnls"))
 
         pass
 

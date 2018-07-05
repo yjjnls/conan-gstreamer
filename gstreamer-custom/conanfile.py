@@ -17,11 +17,11 @@ class GstreamerCustomConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=True", "fPIC=True"
     source_subfolder = "source_subfolder"
-    root = ""
+    build_dir = ""
     generators = "cmake"
 
     def config_options(self):
-        self.root = "%s" % os.getcwd()
+        # self.root = "%s" % os.getcwd()
         if self.settings.os == "Windows":
             self.options.remove("fPIC")
 
@@ -30,16 +30,17 @@ class GstreamerCustomConan(ConanFile):
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def requirements(self):
-        # self.requires("gstreamer-runtime/%s@%s/stable" %
-        #               (self.version, os.environ['CONAN_USERNAME']))
-        # self.requires("gstreamer-dev/%s@%s/stable" %
-        #               (self.version, os.environ['CONAN_USERNAME']))
+        self.requires("gstreamer-runtime/%s@%s/stable" %
+                      (self.version, os.environ['CONAN_USERNAME']))
+        self.requires("gstreamer-dev/%s@%s/stable" %
+                      (self.version, os.environ['CONAN_USERNAME']))
         pass
 
     def build(self):
         self.run(
             "git clone https://github.com/yjjnls/libgstrtspserver.git --recursive"
         )
+        self.build_dir = os.getcwd()
         if self.settings.os == "Linux":
             gstreamer_root = os.environ.get("GSTREAMER_ROOT",
                                             "/opt/gstreamer/linux_x86_64")
@@ -56,7 +57,19 @@ class GstreamerCustomConan(ConanFile):
                     cwd="%s/libgstrtspserver" % os.getcwd())
                 cmake.configure(source_folder='libgstrtspserver')
                 cmake.build()
-                cmake.install()
+                # cmake.install()
 
     def package(self):
-        self.copy(pattern="*", dst="out", src="out")
+        ext = '.dll'
+        if self.settings.os == 'Linux':
+            ext = '.so'
+        self.copy(pattern="libgstrtspserver-1.0%s" % ext, dst="out", src=".")
+
+    def package_info(self):
+        if self.settings.os == "Linux":
+            gstreamer_root = os.environ.get("GSTREAMER_ROOT",
+                                            "/opt/gstreamer/linux_x86_64")
+
+            self.run("sudo rm -rf out.bak && sudo cp -rf out out.bak")
+            self.run("sudo mv out.bak/libgstrtspserver-1.0.so %s/lib" %
+                     gstreamer_root)

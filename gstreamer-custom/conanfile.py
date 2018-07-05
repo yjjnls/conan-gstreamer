@@ -17,7 +17,6 @@ class GstreamerCustomConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=True", "fPIC=True"
     source_subfolder = "source_subfolder"
-    build_dir = ""
     generators = "cmake"
 
     def config_options(self):
@@ -30,17 +29,21 @@ class GstreamerCustomConan(ConanFile):
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def requirements(self):
-        self.requires("gstreamer-runtime/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
-        self.requires("gstreamer-dev/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
+        # self.requires("gstreamer-runtime/%s@%s/stable" %
+        #               (self.version, os.environ['CONAN_USERNAME']))
+        # self.requires("gstreamer-dev/%s@%s/stable" %
+        #               (self.version, os.environ['CONAN_USERNAME']))
         pass
 
     def build(self):
+
         self.run(
             "git clone https://github.com/yjjnls/libgstrtspserver.git --recursive"
         )
-        self.build_dir = os.getcwd()
+        self.run(
+            "git clone https://github.com/yjjnls/libgstwebrtc.git && cd libgstwebrtc && git submodule update --init"
+        )
+
         if self.settings.os == "Linux":
             gstreamer_root = os.environ.get("GSTREAMER_ROOT",
                                             "/opt/gstreamer/linux_x86_64")
@@ -50,20 +53,32 @@ class GstreamerCustomConan(ConanFile):
                 'GSTREAMER_ROOT': gstreamer_root
             }
 
-            cmake = CMake(self)
-            with tools.environment_append(vars):
-                self.run(
-                    "chmod +x build.sh && sudo ./build.sh",
-                    cwd="%s/libgstrtspserver" % os.getcwd())
-                cmake.configure(source_folder='libgstrtspserver')
-                cmake.build()
-                # cmake.install()
+            self.run(
+                "chmod +x build.sh && sudo ./build.sh",
+                cwd="%s/libgstrtspserver" % os.getcwd())
+
+        cmake = CMake(self)
+        with tools.environment_append(vars):
+            # rtsp-server
+            cmake.configure(
+                source_folder='libgstrtspserver',
+                build_folder='build/rtspserver')
+            cmake.build(build_dir='build/rtspserver')
+
+            # webrtc
+            cmake.configure(
+                source_folder='libgstwebrtc/dtls', build_folder='build/dtls')
+            cmake.build(build_dir='build/dtls')
 
     def package(self):
         ext = '.dll'
         if self.settings.os == 'Linux':
             ext = '.so'
-        self.copy(pattern="libgstrtspserver-1.0%s" % ext, dst="out", src=".")
+        self.copy(
+            pattern="libgstrtspserver-1.0%s" % ext,
+            dst="out",
+            src="build/rtspserver")
+        self.copy(pattern="libgstdtls%s" % ext, dst="out", src="build/dtls")
 
     def package_info(self):
         if self.settings.os == "Linux":
@@ -73,3 +88,6 @@ class GstreamerCustomConan(ConanFile):
             self.run("sudo rm -rf out.bak && sudo cp -rf out out.bak")
             self.run("sudo mv out.bak/libgstrtspserver-1.0.so %s/lib" %
                      gstreamer_root)
+            self.run("sudo mv out.bak/libgstdtls.so %s/lib/gstreamer-1.0" %
+                     gstreamer_root)
+            self.run("sudo rm -rf out.bak")

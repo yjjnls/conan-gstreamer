@@ -29,10 +29,10 @@ class GstreamerCustomConan(ConanFile):
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def requirements(self):
-        # self.requires("gstreamer-runtime/%s@%s/stable" %
-        #               (self.version, os.environ['CONAN_USERNAME']))
-        # self.requires("gstreamer-dev/%s@%s/stable" %
-        #               (self.version, os.environ['CONAN_USERNAME']))
+        self.requires("gstreamer-runtime/%s@%s/stable" %
+                      (self.version, os.environ['CONAN_USERNAME']))
+        self.requires("gstreamer-dev/%s@%s/stable" %
+                      (self.version, os.environ['CONAN_USERNAME']))
         pass
 
     def build(self):

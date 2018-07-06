@@ -33,13 +33,11 @@ class GstreamerRuntimeConan(ConanFile):
         self.run("git config --global user.name \"yjjnls\"")
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
-    def requirements(self):
+    def build(self):
         self.requires("gstreamer-build-tools/%s@%s/stable" %
                       (self.version, os.environ['CONAN_USERNAME']))
         self.requires("gstreamer-package/%s@%s/stable" %
                       (self.version, os.environ['CONAN_USERNAME']))
-
-    def build(self):
         if self.settings.os == "Linux":
             for p in self.deps_cpp_info.build_paths:
                 self.run("sudo cp -rf build %s/cerbero" % self.root, cwd=p)
@@ -53,8 +51,14 @@ class GstreamerRuntimeConan(ConanFile):
 
     def package(self):
         self.copy(pattern=self.tar, dst=".", src="%s/cerbero" % self.root)
+
+        if self.settings.os == "Linux":
+            ext = "sh"
+        else:
+            ext = "cmd"
+
         self.copy(
-            pattern="tshell.sh",
+            pattern="tshell.%s" % ext,
             dst=".",
             src="%s/gstreamer-runtime" % self.root)
 

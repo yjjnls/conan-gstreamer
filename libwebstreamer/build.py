@@ -13,8 +13,6 @@ from cpt.packager import ConanMultiPackager
 from conans.client.loader_parse import load_conanfile_class
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 
-CONAN_USERNAME = os.environ.get("CONAN_USERNAME")
-
 
 def get_build_number():
     '''
@@ -109,6 +107,9 @@ if __name__ == '__main__':
     '''
     os.rename('conanfile.py', 'conanfile.py.origin~')
     shutil.copy('conanfile.py.origin~', 'conanfile.py')
+
+    CONAN_USERNAME = os.environ.get("CONAN_USERNAME", "yjjnls")
+    os.environ['CONAN_USERNAME'] = CONAN_USERNAME
 
     try:
         if os.path.exists('conanfile.py'):

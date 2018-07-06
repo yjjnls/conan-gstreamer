@@ -32,10 +32,15 @@ class LibWebstreamerConan(ConanFile):
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def requirements(self):
-        self.requires("gstreamer-custom/1.14.0.1@%s/stable" %
-                      os.environ['CONAN_USERNAME'])
-        self.requires("tesseract.plugin/0.1.0-dev.6@%s/testing" %
-                      os.environ['CONAN_USERNAME'])
+        self.requires("gstreamer-dev/1.14.0.1@%s/stable" % os.environ.get(
+            "CONAN_USERNAME", "yjjnls"))
+        self.requires("gstreamer-runtime/1.14.0.1@%s/stable" % os.environ.get(
+            "CONAN_USERNAME", "yjjnls"))
+        self.requires("gstreamer-custom/1.14.0.1@%s/stable" % os.environ.get(
+            "CONAN_USERNAME", "yjjnls"))
+        # self.requires("tesseract.plugin/0.1.0-dev.10@%s/testing" %
+        #               os.environ.get("CONAN_USERNAME", "yjjnls"))
+
         pass
 
     def build(self):
@@ -58,6 +63,11 @@ class LibWebstreamerConan(ConanFile):
                 source_folder='libwebstreamer',
                 build_folder='build/libwebstreamer')
             cmake.build(build_dir='build/libwebstreamer')
+
+            ld_path = ""
+            for p in self.deps_cpp_info.lib_paths:
+                ld_path = "%s%s%s" % (p, os.pathsep, ld_path)
+            print "ld_path:\n%s" % ld_path
 
     def package(self):
         ext = '.dll'

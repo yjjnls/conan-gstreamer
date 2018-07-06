@@ -68,6 +68,8 @@ class GstreamerRuntimeConan(ConanFile):
                 for item in nondirs:
                     self.replace_pc(os.path.join(top, item), gstreamer_root)
 
+            self.install_tshell()
+
     def replace_pc(self, target_file, target_dir):
         file_object = open(target_file, 'r+')
         pattern = ""
@@ -89,3 +91,11 @@ class GstreamerRuntimeConan(ConanFile):
                 file_object.write(line)
         finally:
             file_object.close()
+
+    def install_tshell(self):
+        if self.settings.os == "Linux":
+            gstreamer_root = os.environ.get("GSTREAMER_ROOT",
+                                            "/opt/gstreamer/linux_x86_64")
+            content = "#!/bin/bash\n\nexport GSTREAMER_ROOT=$(pwd)\nexport CPPFLAGS=\"-I${GSTREAMER_ROOT}/include ${CPPFLAGS}\"\nexport GST_REGISTRY_1_0=\"${HOME}/.cache/gstreamer-1.0/gstreamer-cerbero-registry\"\nexport XDG_CONFIG_DIRS=\"${GSTREAMER_ROOT}/etc/xdg${XDG_CONFIG_DIRS:+:$XDG_CONFIG_DIRS}:/etc/xdg\"\nexport LDFLAGS=\"-L${GSTREAMER_ROOT}/lib ${LDFLAGS}\"\nexport XDG_DATA_DIRS=\"${GSTREAMER_ROOT}/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}:/usr/local/share:/usr/share\"\nexport GST_PLUGIN_SYSTEM_PATH_1_0=\"${GSTREAMER_ROOT}/lib/gstreamer-1.0\"\nexport GIO_EXTRA_MODULES=\"${GSTREAMER_ROOT}/lib/gio/modules\"\nexport GST_PLUGIN_SYSTEM_PATH=\"${GSTREAMER_ROOT}/lib/gstreamer-0.10\"\nexport GST_PLUGIN_SCANNER=\"${GSTREAMER_ROOT}/libexec/gstreamer-0.10/gst-plugin-scanner\"\nexport GST_PLUGIN_SCANNER_1_0=\"${GSTREAMER_ROOT}/libexec/gstreamer-1.0/gst-plugin-scanner\"\nexport CFLAGS=\"-I${GSTREAMER_ROOT}/include ${CFLAGS}\"\nexport PYTHONPATH=\"${GSTREAMER_ROOT}/lib/python2.7/site-packages${PYTHONPATH:+:$PYTHONPATH}\"\nexport PKG_CONFIG_PATH=\"${GSTREAMER_ROOT}/lib/pkgconfig:${GSTREAMER_ROOT}/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}\"\nexport PATH=\"${GSTREAMER_ROOT}/bin${PATH:+:$PATH}:/usr/local/bin:/usr/bin:/bin\"\nexport GST_REGISTRY=\"${HOME}/.gstreamer-0.10/gstreamer-cerbero-registry\"\nexport LD_LIBRARY_PATH=\"${GSTREAMER_ROOT}/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"\nexport CXXFLAGS=\"-I${GSTREAMER_ROOT}/include ${CXXFLAGS}\"\nexport GI_TYPELIB_PATH=\"${GSTREAMER_ROOT}/lib/girepository-1.0\"\n\n$SHELL \"$@\""
+
+            self.run("echo \"%s\" >%s/tshell.sh" % (content, gstreamer_root))

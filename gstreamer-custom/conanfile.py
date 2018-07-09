@@ -31,11 +31,11 @@ class GstreamerCustomConan(ConanFile):
     def requirements(self):
         self.requires("gstreamer-runtime/%s@%s/stable" %
                       (self.version, os.environ['CONAN_USERNAME']))
-        self.requires("gstreamer-dev/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
         pass
 
     def build(self):
+        self.requires("gstreamer-dev/%s@%s/stable" %
+                      (self.version, os.environ['CONAN_USERNAME']))
 
         self.run(
             "git clone https://github.com/yjjnls/libgstrtspserver.git --recursive"

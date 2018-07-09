@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 from conans import ConanFile
 
 
@@ -35,8 +36,8 @@ class GstreamerDevelopmentConan(ConanFile):
     def build(self):
         self.requires("gstreamer-build-tools/%s@%s/stable" %
                       (self.version, os.environ['CONAN_USERNAME']))
-        self.requires("gstreamer-package/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
+        # self.requires("gstreamer-package/%s@%s/stable" %
+        #               (self.version, os.environ['CONAN_USERNAME']))
         if self.settings.os == "Linux":
             for p in self.deps_cpp_info.build_paths:
                 self.run("sudo cp -rf build %s/cerbero" % self.root, cwd=p)
@@ -55,8 +56,36 @@ class GstreamerDevelopmentConan(ConanFile):
         if self.settings.os == "Linux":
             self.tar = "gstreamer-1.0-linux-x86_64-%s-devel.tar.bz2" % self.version
 
-            output_dir = os.environ.get("GSTREAMER_1_0_ROOT_X86_64",
-                                        "/opt/gstreamer/linux_x86_64")
+            gstreamer_root = os.environ.get("GSTREAMER_ROOT",
+                                            "/opt/gstreamer/linux_x86_64")
             tar_package = "%s/%s" % (os.getcwd(), self.tar)
-            self.run("sudo mkdir -p %s" % output_dir)
-            self.run("tar -jxf %s" % tar_package, cwd=output_dir)
+            self.run("sudo mkdir -p %s" % gstreamer_root)
+            self.run("tar -jxf %s" % tar_package, cwd=gstreamer_root)
+            for top, dirs, nondirs in os.walk(
+                    "%s/lib/pkgconfig" % gstreamer_root):
+                for item in nondirs:
+                    self.replace_pc(os.path.join(top, item), gstreamer_root)
+
+            self.run("sudo cp -f tshell.sh %s" % gstreamer_root)
+
+    def replace_pc(self, target_file, target_dir):
+        file_object = open(target_file, 'r+')
+        pattern = ""
+        try:
+            all_lines = file_object.readlines()
+            file_object.seek(0)
+            file_object.truncate()
+            for line in all_lines:
+                if 'cerbero/build/dist/linux_x86_64' in line:
+                    searchObj = re.search(
+                        '(.*)=(.*)cerbero/build/dist/linux_x86_64', line)
+                    if searchObj:
+                        pattern = "%scerbero/build/dist/linux_x86_64" % searchObj.group(
+                            2)
+                        line = line.replace("%scerbero/build/dist/linux_x86_64"
+                                            % searchObj.group(2), target_dir)
+                    else:
+                        line = line.replace(pattern, target_dir)
+                file_object.write(line)
+        finally:
+            file_object.close()

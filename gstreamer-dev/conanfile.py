@@ -58,5 +58,5 @@ class GstreamerDevelopmentConan(ConanFile):
             output_dir = os.environ.get("GSTREAMER_1_0_ROOT_X86_64",
                                         "/opt/gstreamer/linux_x86_64")
             tar_package = "%s/%s" % (os.getcwd(), self.tar)
-            self.run("mkdir -p %s" % output_dir)
+            self.run("sudo mkdir -p %s" % output_dir)
             self.run("tar -jxf %s" % tar_package, cwd=output_dir)

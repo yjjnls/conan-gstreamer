@@ -3,6 +3,7 @@
 
 import os
 import shutil
+import re
 from conans import ConanFile, CMake, tools
 
 
@@ -25,9 +26,9 @@ class GstreamerBuildToolsConan(ConanFile):
             self.options.remove("fPIC")
 
     def system_requirements(self):
-        self.run(
-            "if [ ! -d cerbero ]; then git clone https://github.com/yjjnls/cerbero; fi",
-            cwd=self.root)
+        if not os.path.exists("%s/cerbero" % self.root):
+            self.run(
+                "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
         self.run("git config --global user.name \"yjjnls\"")
         self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
@@ -43,6 +44,20 @@ class GstreamerBuildToolsConan(ConanFile):
             self.run(
                 "yes|sudo ./cerbero-uninstalled -c config/linux.config bootstrap",
                 cwd="%s/cerbero" % self.root)
+        else:
+            path = "%s/cerbero" % self.root
+            path = path.replace(":/", ":\\")
+            pattern = re.compile(r'([a-z]):\\', re.IGNORECASE)
+            path = pattern.sub('/\\1/', path).replace('\\', '/')
+
+            if self.settings.arch == 'x86_64':
+                config = 'win64'
+            else:
+                config = 'win32'
+            self.run(
+                "cd %s && ./cerbero-uninstalled -c config/%s.cbc bootstrap"
+                % (path, config),
+                win_bash=True)
 
     def package(self):
         self.copy(
@@ -50,8 +65,3 @@ class GstreamerBuildToolsConan(ConanFile):
             dst="build",
             src="%s/cerbero/build" % self.root,
             symlinks=True)
-
-    # def package_info(self):
-    #     if self.settings.os == "Linux":
-    #         self.run("sudo cp -rf %s/cerbero/build %s" % (self.root,
-    #                                                       os.getcwd()))

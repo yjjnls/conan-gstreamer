@@ -66,8 +66,6 @@ class GstreamerDevelopmentConan(ConanFile):
                 for item in nondirs:
                     self.replace_pc(os.path.join(top, item), gstreamer_root)
 
-            self.run("sudo cp -f tshell.sh %s" % gstreamer_root)
-
     def replace_pc(self, target_file, target_dir):
         file_object = open(target_file, 'r+')
         pattern = ""

@@ -60,7 +60,7 @@ class GstreamerDevelopmentConan(ConanFile):
                                             "/opt/gstreamer/linux_x86_64")
             tar_package = "%s/%s" % (os.getcwd(), self.tar)
             self.run("sudo mkdir -p %s" % gstreamer_root)
-            self.run("tar -jxf %s" % tar_package, cwd=gstreamer_root)
+            self.run("sudo tar -jxf %s" % tar_package, cwd=gstreamer_root)
             for top, dirs, nondirs in os.walk(
                     "%s/lib/pkgconfig" % gstreamer_root):
                 for item in nondirs:

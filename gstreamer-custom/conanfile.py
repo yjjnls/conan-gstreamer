@@ -45,8 +45,9 @@ class GstreamerCustomConan(ConanFile):
         )
 
         if self.settings.os == "Linux":
-            gstreamer_root = os.environ.get("GSTREAMER_ROOT",
-                                            "/opt/gstreamer/linux_x86_64")
+            gstreamer_root = os.environ.get(
+                "GSTREAMER_ROOT",
+                "%s/gstreamer/linux_x86_64" % os.getenv("HOME"))
 
             vars = {
                 'PKG_CONFIG_PATH': "%s/lib/pkgconfig" % gstreamer_root,
@@ -82,8 +83,9 @@ class GstreamerCustomConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Linux":
-            gstreamer_root = os.environ.get("GSTREAMER_ROOT",
-                                            "/opt/gstreamer/linux_x86_64")
+            gstreamer_root = os.environ.get(
+                "GSTREAMER_ROOT",
+                "%s/gstreamer/linux_x86_64" % os.getenv("HOME"))
 
             self.run("sudo rm -rf out.bak && sudo cp -rf out out.bak")
             self.run("sudo mv out.bak/libgstrtspserver-1.0.so %s/lib" %

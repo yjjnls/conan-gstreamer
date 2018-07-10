@@ -65,8 +65,9 @@ class GstreamerRuntimeConan(ConanFile):
         if self.settings.os == "Linux":
             self.tar = "gstreamer-1.0-linux-x86_64-%s.tar.bz2" % self.version
 
-            gstreamer_root = os.environ.get("GSTREAMER_ROOT",
-                                            "/opt/gstreamer/linux_x86_64")
+            gstreamer_root = os.environ.get(
+                "GSTREAMER_ROOT",
+                "%s/gstreamer/linux_x86_64" % os.getenv("HOME"))
             tar_package = "%s/%s" % (os.getcwd(), self.tar)
             self.run("sudo mkdir -p %s" % gstreamer_root)
             self.run("sudo tar -jxf %s" % tar_package, cwd=gstreamer_root)

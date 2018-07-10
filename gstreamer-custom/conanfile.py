@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-from conans import ConanFile, CMake, tools
+
+from conans import CMake, ConanFile, tools
 
 
 class GstreamerCustomConan(ConanFile):

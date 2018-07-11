@@ -21,7 +21,6 @@ class GstreamerCustomConan(ConanFile):
     generators = "cmake"
 
     def config_options(self):
-        # self.root = "%s" % os.getcwd()
         if self.settings.os == "Windows":
             self.options.remove("fPIC")
 
@@ -32,18 +31,18 @@ class GstreamerCustomConan(ConanFile):
     def requirements(self):
         self.requires("gstreamer-runtime/%s@%s/stable" %
                       (self.version, os.environ['CONAN_USERNAME']))
-        pass
+
+    def build_requirements(self):
+        if self.settings.os == "Linux":
+            self.build_requires("gstreamer-dev/%s@%s/stable" %
+                                (self.version, os.environ['CONAN_USERNAME']))
 
     def build(self):
-        self.requires("gstreamer-dev/%s@%s/stable" %
-                      (self.version, os.environ['CONAN_USERNAME']))
-
         self.run(
             "git clone https://github.com/yjjnls/libgstrtspserver.git --recursive"
         )
-        self.run(
-            "git clone https://github.com/yjjnls/libgstwebrtc.git && cd libgstwebrtc && git submodule update --init"
-        )
+        self.run("git clone https://github.com/yjjnls/libgstwebrtc.git \
+            && cd libgstwebrtc && git submodule update --init")
 
         if self.settings.os == "Linux":
             gstreamer_root = os.environ.get(

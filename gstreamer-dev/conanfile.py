@@ -37,7 +37,7 @@ class GstreamerDevelopmentConan(ConanFile):
     def build_requirements(self):
         if self.settings.os == "Linux":
             self.build_requires("gstreamer-build-tools/%s@%s/stable" %
-                                (self.version, os.environ['CONAN_USERNAME']))
+                                (self.version, os.environ.get("DEPENDENT_BINTRAY_REPO", os.environ.get("CONAN_USERNAME"))))
 
     def build(self):
         if self.settings.os == "Linux":

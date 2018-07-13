@@ -22,15 +22,41 @@ The build order is as below:
 # How to build
 
 ## linux
+### pre-work
+* Gstreamer should be built in the docker `lasote/conangcc49` using gcc4.9. Here's the steps:
+
+```bash
+# download the docker image
+$ git pull lasote/conangcc49
+
+# the first time to run the image
+$ sudo docker run -it lasote/conangcc49 /bin/bash
+
+# or you can use the commands below once you have creaed a container using the command above
+$ sudo docker start container_id
+$ sudo docker exec -it container_id /bin/bash
+
+# update the environment, it may be very slow and vpn may be required
+$ sudo apt-get -y update
+$ sudo apt-get -y upgrade
+$ sudo apt-get install -y build-essential
+```
+
+
+### build
+gstreamer-runtime, gstreamer-dev, and gstreamer-custom require dependies. They will use the pre-built package in your own bintray defaultly.   
+
+If you want to use the other pre-built packages, set `DEPENDENT_BINTRAY_REPO` in your environment. `DEPENDENT_BINTRAY_REPO` is the bintray username, if not set, it's same as `CONAN_USERNAME`.
+
 
     $ cd $project
     $ sudo python build.py
 
-The gstreamer library will be installed to the directory `/opt/gstreamer/linux_x86_64`.
+The gstreamer library will be installed to the directory `~/gstreamer/linux_x86_64`.
 
 If you want to develop your own library based on the gstreamer-1.0, run the commond to load the environment:
 
-    $ cd /opt/gstreamer/linux_x86_64
+    $ cd ~/gstreamer/linux_x86_64
     $ source tshell.sh
 
 ## windows

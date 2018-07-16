@@ -40,6 +40,8 @@ $ sudo docker exec -it container_id /bin/bash
 $ sudo apt-get -y update
 $ sudo apt-get -y upgrade
 $ sudo apt-get install -y build-essential
+$ git config --global user.name "xxx"
+$ git config --global user.email "xxxx"
 ```
 
 

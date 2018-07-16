@@ -30,13 +30,11 @@ class GstreamerRuntimeConan(ConanFile):
         if not os.path.exists("%s/cerbero" % self.root):
             self.run(
                 "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
-        self.run("git config --global user.name \"yjjnls\"")
-        self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def build_requirements(self):
         if self.settings.os == "Linux":
             self.build_requires("gstreamer-build-tools/%s@%s/stable" %
-                                (self.version, os.environ.get("DEPENDENT_BINTRAY_REPO", os.environ.get("CONAN_USERNAME"))))
+                                (self.version, os.environ.get("DEPENDENT_BINTRAY_REPO")))
 
     def build(self):
         if self.settings.os == "Linux":

@@ -29,8 +29,6 @@ class GstreamerBuildToolsConan(ConanFile):
         if not os.path.exists("%s/cerbero" % self.root):
             self.run(
                 "git clone https://github.com/yjjnls/cerbero", cwd=self.root)
-        self.run("git config --global user.name \"yjjnls\"")
-        self.run("git config --global user.email \"x-jj@foxmail.com\"")
 
     def build(self):
         if self.settings.os == "Linux":
